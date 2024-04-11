@@ -68,3 +68,5 @@ tracker.json
 google-services.json
 google-services-account.json
 GoogleService-Info.plist
+gradle.properties
+google_maps_api.xml
