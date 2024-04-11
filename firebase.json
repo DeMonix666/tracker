@@ -1,0 +1,8 @@
+{
+  "react-native": {
+    "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json",
+    "analytics_auto_collection_enabled": true,
+    "messaging_auto_init_enabled": true,
+    "messaging_ios_auto_register_for_remote_messages": true
+  }
+}

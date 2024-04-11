@@ -1,0 +1,7 @@
+{
+  "name": "Tracker",
+  "displayName": "Tracker",
+  "ios": {
+    "useFrameworks": "static"
+  }
+}

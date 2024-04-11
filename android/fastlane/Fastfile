@@ -1,0 +1,95 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+  # desc "Deploy a new version to the Google Play"
+  # lane :deploy do
+  #   gradle(task: "clean assembleRelease")
+  #   upload_to_play_store
+  # end
+
+  desc "Create Production APK"
+  lane :build_prod do
+    gradle(task:"clean")
+    yarn(
+      command: "android:bundle:release",
+      package_path: "../package.json"
+    )
+    gradle(task: "assembleRelease")
+  end
+
+  desc "Deploy production build to firebase"
+  lane :distribute_prod do
+    build_prod
+    firebase_app_distribution(
+      app: "1:160606707065:android:6f18cfb5cfd7baf58da3a8",
+        groups: "Dev",
+        release_notes_file: "./release-notes.txt",
+        service_credentials_file: "./app/google-services-account.json"
+    )
+
+  end
+
+  lane :increment_prod_version do
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: "1:160606707065:android:6f18cfb5cfd7baf58da3a8"
+    )
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+  end
+
+  desc "Create Development APK"
+  lane :build_dev do
+    gradle(task:"clean")
+    yarn(
+      command: "android:bundle:debug",
+      package_path: "../package.json"
+    )
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Distribute development build to firebase"
+  lane :distribute_dev do
+    build_dev
+    firebase_app_distribution(
+        app: "1:807752552492:android:fffe78715754b081750189",
+        groups: "Tester",
+        release_notes_file: "./release-notes.txt",
+        service_credentials_file: "./app/google-services-account.json"
+    )
+  end
+
+  lane :increment_dev_version do
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: "1:807752552492:android:fffe78715754b081750189"
+    )
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+  end
+end
