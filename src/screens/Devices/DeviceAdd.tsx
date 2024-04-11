@@ -63,8 +63,6 @@ const DeviceAdd = () => {
       } finally {
         setLoading(false);
       }
-
-
     }
   };
 

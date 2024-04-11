@@ -5,27 +5,16 @@ import { Platform, StyleSheet, View } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker } from 'react-native-maps';
 import { colors, Icon } from 'react-native-elements';
 import { useRoute } from '@react-navigation/native';
+import { useReactQuery } from 'hooks';
 
 const Device = () => {
   const { params: { id } }: any = useRoute();
-  const [data, setData] = useState<any>();
   const [zoom, setZoom] = useState(15);
   const [region, setRegion] = useState<any>();
 
-  useEffect(() => {
-    const url = `/authentication/user/${id}`;
-
-    const ref = database.ref(url);
-
-    ref.on('value', (snap) => {
-      console.log(snap.val());
-      setData(snap.val());
-    });
-
-    return () => {
-      ref.off();
-    }
-  }, []);
+  const { data, isLoading, error }: any = useReactQuery(
+    `/authentication/user/${id}`
+  );
 
   useEffect(() => {
     if (!region && data) {
